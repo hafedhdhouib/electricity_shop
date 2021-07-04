@@ -1,4 +1,8 @@
 export default {
+  env: {
+    baseUrl: process.env.BASE_URL,
+    apiUrl: process.env.API_URL
+  },
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: 'shop',
@@ -28,13 +32,22 @@ export default {
 
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
+    '@nuxtjs/dotenv'
+
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     // https://go.nuxtjs.dev/buefy
-    'nuxt-buefy',
+    'nuxt-buefy','@nuxtjs/axios',
+    '@nuxtjs/dayjs'
   ],
+  dayjs: {
+    locales: ['fr'],
+    defaultLocale: 'fr',
+    plugins: ['relativeTime', 'advancedFormat'],
+  },
+  
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {

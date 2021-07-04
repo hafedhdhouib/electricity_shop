@@ -1,6 +1,6 @@
 import JWTDecode from "jwt-decode";
 import cookieparser from "cookieparser";
-import { auth,firestore } from "@/services/firebase";
+import { auth,firestore,storage } from "@/services/firebase";
 import Cookie from "js-cookie";
 
 export const actions = {
@@ -40,21 +40,48 @@ export const actions = {
       throw error;
     }
   },
-  async add({commit},product){
-    await firestore.collection('product').add({
-      ref:product.ref,
-      nom:product.nom,
-      price:product.price,
-      sellprice:product.sellprice,
-      qte:product.qte
-  })
-}
 };
 export const mutations = {
   SET_USER: (state, account) => {
     state.user = account;
+  },
+  addToCart: (state,pay) =>{
+    state.cart.push(pay)
+  },
+  addToCart2(state,pay){
+    let i = 0
+    if (state.cart.length ===0){
+      state.cart.push(pay)
+    }
+    else
+    {
+      console.log(state.cart.length);
+      for( i=0; i<=state.cart.length-1;i++){
+        console.log(i);
+      if (state.cart[i].item === pay.item){
+        state.cart[i].QTE = state.cart[i].QTE + pay.QTE
+        break
+      }}
+      if (i===state.cart.length)
+      state.cart.push(pay)}
+  },
+  zid(state,pay){
+    console.log(pay);
+    console.log(state.cart);
+    const a=state.cart.indexOf(pay.item)
+    state.cart[a].QTE =  pay.number
+    console.log(a);
+  },
+  deleteItem(state,pay){
+    state.cart= state.cart.filter(item => item!==pay)
   }
 };
+export const getters = {
+  cart (state) {
+    return state.cart
+  }
+}
 export const state = () => ({
-  user: null
+  user: null,
+  cart: []
 });

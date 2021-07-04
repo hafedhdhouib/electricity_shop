@@ -1,62 +1,88 @@
 <template>
-  <b-modal :active.sync="isModalActive" has-modal-card>
+  <b-modal v-model="isModalActive" :width="640" scroll="keep">
     <div class="modal-card">
       <header class="modal-card-head">
-        <p class="modal-card-title">Confirm action</p>
+        <p class="modal-card-title">Ajouter au panier</p>
       </header>
       <section class="modal-card-body">
-        <b-field label="test">
-          <b-input v-model="test"/>
+        <b-field label="QTE">
+          <b-input ref="qte" v-model="qte" type="Number" />
         </b-field>
+        <b> </b>
+        {{ object }}
       </section>
       <footer class="modal-card-foot">
-        <button class="button" type="button" @click="cancel">Cancel</button>
-        <button class="button is-danger" @click="confirm">Delete</button>
+        <b-button class="button" type="button" @click="cancel">Cancel</b-button>
+        <b-button class="is-danger" type="button" @click="confirme"
+          >confirme</b-button
+        >
       </footer>
     </div>
   </b-modal>
 </template>
 
 <script>
+const apiUrl = process.env.API_URL;
 export default {
-  name: 'ModalBox',
   props: {
     isActive: {
       type: Boolean,
-      default: false
+      default: false,
     },
-    trashObjectName: {
-      default: null
-    }
+    object: {
+      type: Object,
+    },
+    image: {
+      type: String,
+    },
+    name: {
+      type: String,
+    },
+    description: {
+      type: String,
+    },
+    owner: {
+      type: String,
+    },
+    id: {
+      type: Number,
+    },
   },
-  data () {
+  data() {
     return {
       isModalActive: false,
-      test: 0 
-    }
+      qte:0
+    };
   },
   watch: {
-    isActive (newValue) {
-      this.isModalActive = newValue
+    isActive(newValue) {
+      this.isModalActive = newValue;
     },
-    isModalActive (newValue) {
+    isModalActive(newValue) {
       if (!newValue) {
-        this.cancel()
+        this.cancel();
       }
-    }
+    },
   },
   methods: {
-    cancel () {
+    cancel() {
+      this.$emit("cancel");
+    },
+    confirme() {
+      let articleOutput = {
+        img:this.object.image,
+        item: this.object.name,
+        QTE: Number(this.qte),
+        prix: Number(this.object.price),
+        prix_totla: this.qte * this.object.price,
+        id: this.object.id    }
+      this.cardSubmitted = true
+      this.$store.commit("addToCart2", articleOutput)
       this.isModalActive = false
     },
-    confirm () {
-      console.log(this.trashObjectName.id,' ',this.test)
-      this.isModalActive = false
-      this.$buefy.snackbar.open({
-        message: 'Confirmed',
-        queue: false
-      })
-    }
-  }
-}
+  },
+};
 </script>
+
+<style>
+</style>

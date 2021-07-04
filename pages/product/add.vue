@@ -1,6 +1,6 @@
 <template>
   <body>
-    <section class="hero is-light is-fullheight">
+    <section class="hero is-light">
       <div class="hero-body">
         <div class="container has-text-centered">
           <div class="">
@@ -29,25 +29,35 @@
                 <div class="columns">
                   <div class="column">
                     <b-field label="prix d achat">
-                      <b-input type="float" v-model="product.price" required  />
+                      <b-input type="float" v-model="product.price" required />
                     </b-field>
                   </div>
+                </div>
+                <div class="columns">
                   <div class="column">
-                    <b-field label="prix de vente">
-                      <b-input type="float" v-model="product.sellprice" required />
+                    <b-field
+                      class="file is-primary"
+                      :class="{ 'has-name': !!file }"
+                    >
+                      <b-upload v-model="file" class="file-label">
+                        <span class="file-cta">
+                          <b-icon class="file-icon" icon="upload"></b-icon>
+                          <span class="file-label">Click to upload</span>
+                        </span>
+                        <span class="file-name" v-if="file">
+                          {{ file.name }}
+                        </span>
+                      </b-upload>
                     </b-field>
                   </div>
                 </div>
                 <b-button native-type="submit" class="is-primary"
                   >Ajouter</b-button
                 >
+                {{ progress }}
               </form>
             </div>
-            <p class="has-text-grey">
-              <a href="../">Sign Up</a> &nbsp;·&nbsp;
-              <a href="../">Forgot Password</a> &nbsp;·&nbsp;
-              <a href="../">Need Help?</a>
-            </p>
+            <p class="has-text-grey"></p>
           </div>
         </div>
       </div>
@@ -56,22 +66,51 @@
 </template>
 
 <script>
+import { auth, firestore, storage } from "@/services/firebase";
 export default {
-data() {
-  return {
-    product:{
-        ref:'',
-        nom:'',
-        price:null,
-        sellprice:null,
-        qte:null
-    }
-  }
-},
+  data() {
+    return {
+      product: {
+        ref: "",
+        nom: "",
+        price: null,
+        sellprice: null,
+        qte: null,
+      },
+      file: null,
+      progress: 0,
+    };
+  },
   methods: {
-    add() {
-        this.$store.dispatch("add", this.product)
-    }
+    async add() {
+      const storageRef = storage.ref();
+      const uploadTask = storageRef
+        .child(`product/test_${Date.now()}.jpg`)
+        .put(this.file);
+      await uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          this.progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        },
+        (error) => {
+          console.log(error);
+        },
+        () => {
+          uploadTask.snapshot.ref.getDownloadURL().then((img) => {
+      this.$axios.$post('http://localhost:3000/products', { 
+        image: img,
+        name: this.product.nom,
+        price: this.product.price,
+        countInStock: this.product.qte,
+       })
+          }).then(()=>{
+              this.$router.push('/')
+
+          })
+        }
+      );
+    },
   },
 };
 </script>

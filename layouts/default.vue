@@ -25,8 +25,15 @@
       </div>
       <div class="navbar-end">
       <div class="navbar-item">
-        <b-icon icon="basket" />
-        <nuxt-link to="/product/add"><b-button class="is-info">ajout produit</b-button></nuxt-link>
+          <div class="buttons">
+          <nuxt-link to="/panier" class="button is-primary">
+            <b-icon type="is-white" icon="basket" />
+            <span class="cartcount">{{cart.length}}</span>
+          </nuxt-link>
+              <nuxt-link to="/product/add" class="button is-primary">
+            ajout produit
+          </nuxt-link>
+        </div>
       </div>
     </div>
     </nav>
@@ -59,7 +66,10 @@
 </template>
 
 <script>
+import {mapGetters} from 'vuex'
 export default {
+computed: {
+    ...mapGetters(['cart'])},
   data () {
     return {
       items: [
@@ -69,12 +79,33 @@ export default {
           to: { name: 'index' }
         },
         {
-          title: 'Inspire',
+          title: 'Panier',
           icon: 'lightbulb',
-          to: { name: 'inspire' }
+          to: { name: 'panier' }
+        },
+        {
+          title: 'historique',
+          icon: 'lightbulb',
+          to: { name: 'historique' }
         }
       ]
     }
   }
 }
 </script>
+<style scoped>
+.cartcount {
+  font-family: 'Barlow', sans-serif;
+  position: absolute;
+  background: rgb(253, 103, 92);
+  color: #fff;
+  text-align: center;
+  padding-top: 2px;
+  height: 18px;
+  width: 18px;
+  font-size: 10px;
+  margin: -8px 0 0 8px;
+  border-radius: 50%;
+  font-weight: 700;
+}
+</style>
